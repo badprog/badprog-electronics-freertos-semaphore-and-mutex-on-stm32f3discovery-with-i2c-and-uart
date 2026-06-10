@@ -1,0 +1,26 @@
+# badprog.com
+# Build output
+**/build/
+**/*.o
+**/*.obj
+**/*.elf
+**/*.hex
+**/*.bin
+**/*.map
+**/*.su
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# local
+.devcontainer/local/

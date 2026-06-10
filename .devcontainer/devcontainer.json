@@ -1,0 +1,33 @@
+{
+    "name": "stm32-freertos-semaphore-mutex",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "remoteUser": "badprog",
+    "runArgs": [
+        "--privileged",
+        "-v",
+        "/dev/bus/usb:/dev/bus/usb",
+        "--device=/dev/ttyUSB0"
+    ],
+    "postStartCommand": "sudo chmod 666 /dev/bus/usb/001/* 2>/dev/null || true",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools",
+                "marus25.cortex-debug"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "cmake.exportCompileCommandsFile": true,
+                "cmake.configureOnOpen": false,
+                "workbench.colorCustomizations": {
+                    "statusBar.background": "#0d22db",
+                    "statusBarItem.remoteBackground": "#ce16f3"
+                }
+            }
+        }
+    }
+}

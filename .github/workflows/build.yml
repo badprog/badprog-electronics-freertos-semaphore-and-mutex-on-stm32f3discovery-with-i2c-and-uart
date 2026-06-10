@@ -1,0 +1,62 @@
+# badprog.com
+name: Build STM32F3Discovery firmware
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            cmake \
+            ninja-build \
+            curl \
+            xz-utils
+
+      - name: Download ARM GNU Toolchain
+        run: |
+          curl -Lo /tmp/arm-toolchain.tar.xz \
+            "https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi.tar.xz"
+          sudo tar -xf /tmp/arm-toolchain.tar.xz -C /opt
+          echo "/opt/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin" >> $GITHUB_PATH
+
+      - name: Verify toolchain
+        run: arm-none-eabi-gcc --version
+
+      - name: Configure
+        working-directory: firmware/stm32f3discovery
+        run: |
+          cmake -B build \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            -G Ninja
+
+      - name: Build
+        working-directory: firmware/stm32f3discovery
+        run: ninja -C build
+
+      - name: Verify output files
+        working-directory: firmware/stm32f3discovery
+        run: |
+          test -f build/stm32f3discovery.bin || (echo "ERROR: .bin not found" && exit 1)
+          test -f build/stm32f3discovery.hex || (echo "ERROR: .hex not found" && exit 1)
+          arm-none-eabi-size build/stm32f3discovery
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: firmware
+          path: |
+            firmware/stm32f3discovery/build/stm32f3discovery.bin
+            firmware/stm32f3discovery/build/stm32f3discovery.hex
