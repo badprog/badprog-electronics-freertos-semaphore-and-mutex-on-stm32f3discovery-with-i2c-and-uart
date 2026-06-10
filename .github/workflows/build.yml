@@ -34,6 +34,13 @@ jobs:
       - name: Verify toolchain
         run: arm-none-eabi-gcc --version
 
+      - name: Download FreeRTOS Kernel
+        run: |
+          curl -Lo /tmp/freertos.tar.gz \
+            "https://github.com/FreeRTOS/FreeRTOS-Kernel/archive/refs/tags/V11.3.0.tar.gz"
+          sudo tar -xzf /tmp/freertos.tar.gz -C /opt
+          echo "FREERTOS_DIR=/opt/FreeRTOS-Kernel-11.3.0" >> $GITHUB_ENV
+
       - name: Configure
         working-directory: firmware/stm32f3discovery
         run: |
